@@ -9,8 +9,8 @@
 
 CaseThickness = 4; // thickness of case / switch place
 
-SwitchBorderHeight    = 7; // border height which hides a switch
-SwitchBorderThickness = 3; // thickness of switch border
+SwitchBorderHeight    = 8; // border height which hides a switch
+SwitchBorderThickness = 1; // thickness of switch border
 SwitchTravelDistance  = 4; // 4mm is the popular distance
 SwitchBottomHeight    = 5; // bottom height of the switch
 
@@ -42,23 +42,25 @@ module ShowExamples(showParts = false) {
             pressed = showParts);
 
         if (showParts) {
-            SwitchPlace([2, 2, 2, 2]);
-            color (SwitchPlaceColor)
-            difference() {
-                KeycapBorderOuter();
-                KeycapBorderHoleInner();
+            SwitchPlace([1.5, 1.5, 1.5, 1.5]);
+            color (SwitchPlaceColor) {
+                hull() SwitchBorderPillars([LT, RT]);
+                hull() SwitchBorderPillars([LT, LB]);
+                hull() SwitchBorderPillars([LB, RB]);
+                hull() SwitchBorderPillars([RB, RT]);
             }
         }
 
         if (showParts) {
-            SwitchPlacePillars([LT, RT, LB, RB], [0, 0, 0, 0]);
+            SwitchPlacePillars([LT, RT, LB, RB], [-0.5, -0.5, -0.5, -0.5]);
             SwitchPlace([-1, -1, -1, -1]);
         } else {
-            SwitchPlace([2, 2, 2, 2]);
-            color (SwitchPlaceColor)
-            difference() {
-                KeycapBorderOuter();
-                KeycapBorderHoleInner();
+            SwitchPlace([1.5, 1.5, 1.5, 1.5]);
+            color (SwitchPlaceColor) {
+                hull() SwitchBorderPillars([LT, RT]);
+                hull() SwitchBorderPillars([LT, LB]);
+                hull() SwitchBorderPillars([LB, RB]);
+                hull() SwitchBorderPillars([RB, RT]);
             }
         }
     }
@@ -97,8 +99,21 @@ module SwitchPlace(sizes) {
 
 // angles: array of the angles
 // sizes: [left, right, top, bottom]
-module SwitchPlacePillars(angles, sizes, thickness = 1) {
-    halfOfSpace = (KeycapSpace - thickness) / 2;
+module SwitchBorderPillars(angles, sizes,
+    thickness = SwitchBorderThickness,
+    height = SwitchBorderHeight,
+    space = KeycapBorderSpace + SwitchBorderThickness * 2)
+{
+    translate([0, 0, height])
+    SwitchPlacePillars(angles, sizes, thickness, height + CaseThickness, space);
+}
+
+// angles: array of the angles
+// sizes: [left, right, top, bottom]
+module SwitchPlacePillars(angles, sizes, thickness = .5,
+    height = CaseThickness, space = KeycapSpace)
+{
+    halfOfSpace = (space - thickness) / 2;
 
     positiveX = halfOfSpace + getValue(sizes[1]); // right
     positiveY = halfOfSpace + getValue(sizes[2]); // top
@@ -106,42 +121,27 @@ module SwitchPlacePillars(angles, sizes, thickness = 1) {
     negativeX = -halfOfSpace - getValue(sizes[0]); // left
     negativeY = -halfOfSpace - getValue(sizes[3]); // bottom
 
-    heightValue = CaseThickness / -2;
+    heightValue = height / -2;
 
     color(PillarsColor)
     for (angle = angles)
         if (angle == LT)
-            Pillar(thickness, CaseThickness,
+            Pillar(thickness, height,
                 [negativeX, positiveY, heightValue]);
         else if (angle == RT)
-            Pillar(thickness, CaseThickness,
+            Pillar(thickness, height,
                 [positiveX, positiveY, heightValue]);
         else if (angle == LB)
-            Pillar(thickness, CaseThickness,
+            Pillar(thickness, height,
                 [negativeX, negativeY, heightValue]);
         else if (angle == RB)
-            Pillar(thickness, CaseThickness,
+            Pillar(thickness, height,
                 [positiveX, negativeY, heightValue]);
 }
 
 module Pillar(thickness, height, offset) {
     translate(offset)
     cube([thickness, thickness, height], true);
-}
-
-module KeycapBorderOuter() {
-    border = KeycapBorderSpace + SwitchBorderThickness;
-    height = SwitchBorderHeight + CaseThickness;
-
-    translate([0, 0, height / 2 - CaseThickness])
-    cube([border, border, height], true);
-}
-
-module KeycapBorderHoleInner() {
-    height = SwitchBorderHeight + CaseThickness;
-
-    translate([0, 0, height / 2 - CaseThickness])
-    cube([KeycapBorderSpace, KeycapBorderSpace, height + 1], true);
 }
 
 module SwitchHoleInner() {

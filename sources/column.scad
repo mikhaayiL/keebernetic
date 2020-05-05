@@ -114,16 +114,13 @@ module ColumnPartOffset(index, column) {
 }
 
 module Column(column = columnParams()) {
-    length = column[keys] - 1 + column[startIndex];
+    length = lastIndexOf(column);
 
     if (column[keys] > 1)
     ColumnOffset(column) {
         for (index = [column[startIndex] : 1 : length]) {
-            color(SwitchPlaceColor) {
+            color(SwitchPlaceColor)
                 ColumnFramePart(index, length - index, column);
-                ColumnPartOffset(index, column)
-                    SwitchPlace(column[placeSizes], CaseThickness);
-            }
 
             if (column[visualKey][show])
                 ColumnPartOffset(index, column)
@@ -133,6 +130,9 @@ module Column(column = columnParams()) {
 }
 
 module ColumnFramePart(index, left, column) {
+    ColumnPartOffset(index, column)
+        SwitchPlace(column[placeSizes], CaseThickness);
+
     ColumnPart(index, LS, column);
     ColumnPart(index, RS, column);
 
@@ -176,8 +176,11 @@ module ColumnPart(index, type, column) {
 
 module ColumnPartPillars(index, angles, column) {
     ColumnPartOffset(index, column)
-        SwitchPlacePillars(angles, column[placeSizes]);
+        SwitchPlacePillars(angles, column[placeSizes], 1);
 }
+
+function lastIndexOf(column) =
+    column[keys] - 1 + column[startIndex];
 
 function concavityHeight(concavity = concavityParams()) =
     isoscelesTriangleHeight(concavity[angle], concavity[base]) + KeycapUpperHeight;
