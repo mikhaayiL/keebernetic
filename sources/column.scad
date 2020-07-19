@@ -113,13 +113,25 @@ module ColumnPartOffset(index, column) {
         children();
 }
 
+module ColumnPartFirst(column) {
+    ColumnOffset(column)
+    ColumnPartOffset(column[startIndex], column)
+        children();
+}
+
+module ColumnPartLast(column) {
+    ColumnOffset(column)
+    ColumnPartOffset(lastIndexOf(column), column)
+        children();
+}
+
 module Column(column = columnParams()) {
     length = lastIndexOf(column);
 
     if (column[keys] > 1)
     ColumnOffset(column) {
         for (index = [column[startIndex] : 1 : length]) {
-            color(SwitchPlaceColor)
+            color(CaseColor)
                 ColumnFramePart(index, length - index, column);
 
             if (column[visualKey][show])
@@ -131,7 +143,7 @@ module Column(column = columnParams()) {
 
 module ColumnFramePart(index, left, column) {
     ColumnPartOffset(index, column)
-        SwitchPlace(column[placeSizes], CaseThickness);
+        SwitchPlace(column[placeSizes]);
 
     ColumnPart(index, LS, column);
     ColumnPart(index, RS, column);
@@ -146,6 +158,60 @@ module ColumnFramePart(index, left, column) {
             ColumnPart(index, LTS, column);
             ColumnPart(index, RTS, column);
         }
+}
+
+module ColumnBridge(column1, column2, left = false, chess = false) {
+    length = column1[keys] > column2[keys]
+        ? lastIndexOf(column2)
+        : lastIndexOf(column1);
+
+    startIndex = column1[keys] > column2[keys]
+        ? column2[startIndex]
+        : column1[startIndex];
+
+    color(CaseColor)
+    for (index = [0 + startIndex : length])
+        if (chess)
+            ColumnChessBridgePart(index + 1, column1, column2, left, length > index);
+        else
+            ColumnBridgePart(index, column1, column2, left, length > index);
+}
+
+module ColumnBridgePart(index, column1, column2, left = false, addsConnector = true) {
+    hull() {
+        ColumnOffset(column1)
+            ColumnPart(index, left ? LS : RS, column1);
+
+        ColumnOffset(column2)
+            ColumnPart(index, left ? RS : LS, column2);
+    }
+
+    if (addsConnector)
+        hull() {
+            ColumnOffset(column1)
+                ColumnPart(index, left ? LBS : RBS, column1);
+
+            ColumnOffset(column2)
+                ColumnPart(index, left ? RBS : LBS, column2);
+        }
+}
+
+module ColumnChessBridgePart(index, column1, column2, left = false, addsConnector = true) {
+    hull() {
+        ColumnOffset(column1)
+            ColumnPart(index, left ? LTS : RTS, column1);
+        ColumnOffset(column2)
+            ColumnPart(index - 1, left ? RS : LS, column2);
+    }
+
+    if (addsConnector) {
+        hull() {
+            ColumnOffset(column1)
+                ColumnPart(index, left ? LS : RS, column1);
+            ColumnOffset(column2)
+                ColumnPart(index, left ? RTS : LTS, column2);
+        }
+    }
 }
 
 module ColumnPart(index, type, column) {
@@ -172,6 +238,52 @@ module ColumnPart(index, type, column) {
             ColumnPartPillars(index, [LB, RB], column);
         }
     }
+}
+
+module ColumnFirstBorderIntersection(
+    column1, angles1, column2, angles2, height1)
+{
+    intersection() {
+        ColumnFirstBorder(column1, angles1, height = height1);
+        ColumnFirstBorder(column2, angles2);
+    }
+}
+
+module ColumnLastBorderIntersection(
+    column1, angles1, column2, angles2, height1)
+{
+    intersection() {
+        ColumnLastBorder(column1, angles1, height = height1);
+        ColumnLastBorder(column2, angles2);
+    }
+}
+
+module ColumnFirstBorder(column, angles, offset, height = SwitchBorderHeight) {
+    hull()
+    ColumnPartFirst(column)
+        SwitchBorderPillars(angles, offset, height = height);
+}
+
+module ColumnLastBorder(column, angles, offset, height = SwitchBorderHeight) {
+    hull()
+    ColumnPartLast(column)
+        SwitchBorderPillars(angles, offset, height = height);
+}
+
+module ColumnFirstPillars(column, angles, offset = [0, 0, 0, 0],
+    thickness = CaseThickness, height = CaseThickness)
+{
+    ColumnPartFirst(column)
+        SwitchPlacePillars(
+            angles, column[placeSizes] + offset, thickness, height);
+}
+
+module ColumnLastPillars(column, angles, offset = [0, 0, 0, 0],
+    thickness = CaseThickness, height = CaseThickness)
+{
+    ColumnPartLast(column)
+        SwitchPlacePillars(
+            angles, column[placeSizes] + offset, thickness, height);
 }
 
 module ColumnPartPillars(index, angles, column) {

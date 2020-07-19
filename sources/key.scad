@@ -25,7 +25,7 @@ KeycapBorderSpace = KeycapSpace + 1; // adds an extra 1mm
 
 KeycapColor             = "#b40";
 SwitchColor             = "#333";
-SwitchPlaceColor        = "#218";
+CaseColor               = "#218";
 AmoebaPcbColor          = "#fff";
 PcbComponentsSpaceColor = "#0a0";
 PillarsColor            = "#f00";
@@ -43,7 +43,7 @@ module ShowExamples(showParts = false) {
 
         if (showParts) {
             SwitchPlace([1.5, 1.5, 1.5, 1.5]);
-            color (SwitchPlaceColor) {
+            color (CaseColor) {
                 hull() SwitchBorderPillars([LT, RT]);
                 hull() SwitchBorderPillars([LT, LB]);
                 hull() SwitchBorderPillars([LB, RB]);
@@ -56,7 +56,7 @@ module ShowExamples(showParts = false) {
             SwitchPlace([-1, -1, -1, -1]);
         } else {
             SwitchPlace([1.5, 1.5, 1.5, 1.5]);
-            color (SwitchPlaceColor) {
+            color (CaseColor) {
                 hull() SwitchBorderPillars([LT, RT]);
                 hull() SwitchBorderPillars([LT, LB]);
                 hull() SwitchBorderPillars([LB, RB]);
@@ -89,23 +89,27 @@ module VisualKey(rotation = 0, pressed = false) {
 }
 
 // sizes: [left, right, top, bottom]
-module SwitchPlace(sizes) {
-    color(SwitchPlaceColor)
+module SwitchPlace(sizes, height = CaseThickness, space = KeycapSpace) {
+    color(CaseColor)
     difference() {
-        hull() SwitchPlacePillars([LT, LB, RT, RB], sizes);
+        hull() SwitchPlacePillars([LT, LB, RT, RB], sizes, .5, height, space);
         SwitchHoleInner();
     }
 }
 
 // angles: array of the angles
 // sizes: [left, right, top, bottom]
-module SwitchBorderPillars(angles, sizes,
+module SwitchBorderPillars(
+    angles,
+    sizes = [0, 0, 0, 0],
     thickness = SwitchBorderThickness,
     height = SwitchBorderHeight,
-    space = KeycapBorderSpace + SwitchBorderThickness * 2)
+    space = KeycapBorderSpace,
+    caseThickness = CaseThickness)
 {
     translate([0, 0, height])
-    SwitchPlacePillars(angles, sizes, thickness, height + CaseThickness, space);
+    SwitchPlacePillars(angles, sizes, thickness,
+        height + caseThickness, space + thickness * 2);
 }
 
 // angles: array of the angles
