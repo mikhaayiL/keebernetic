@@ -23,11 +23,11 @@ KeycapLowerHeight = KeycapUpperHeight - SwitchTravelDistance; // and lower heigh
 KeycapBorderSpace = KeycapSpace + 1; // adds an extra 1mm
                                      // to get 1mm between the border and the keycap
 
-KeycapColor             = "#b40";
+KeycapColor             = "#cb9";
 SwitchColor             = "#333";
-CaseColor               = "#218";
+CaseColor               = "#080";
 AmoebaPcbColor          = "#fff";
-PcbComponentsSpaceColor = "#0a0";
+PcbComponentsSpaceColor = "#f0c";
 PillarsColor            = "#f00";
 
 LT = 1; // top left pillar

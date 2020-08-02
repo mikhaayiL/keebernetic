@@ -134,18 +134,18 @@ module ColumnFramePart(index, left, column) {
     ColumnPartOffset(index, column)
         SwitchPlace(column[placeSizes]);
 
-    ColumnPart(index, LS, column);
-    ColumnPart(index, RS, column);
+    ColumnPart(index, column, LS);
+    ColumnPart(index, column, RS);
 
     if (index == firstIndexOf(column))
-        ColumnPart(index, TS, column);
+        ColumnPart(index, column, TS);
     if (left == 0)
-        ColumnPart(index, BS, column);
+        ColumnPart(index, column, BS);
 
     if (index > firstIndexOf(column))
         hull() {
-            ColumnPart(index, LTS, column);
-            ColumnPart(index, RTS, column);
+            ColumnPart(index, column, LTS);
+            ColumnPart(index, column, RTS);
         }
 }
 
@@ -168,53 +168,79 @@ module ColumnBridge(column1, column2, left = false, chess = false) {
 
 module ColumnBridgePart(index, column1, column2, left = false, addsConnector = true) {
     hull() {
-        ColumnPart(index, left ? LS : RS, column1);
-        ColumnPart(index, left ? RS : LS, column2);
+        ColumnPart(index, column1, left ? LS : RS);
+        ColumnPart(index, column2, left ? RS : LS);
     }
 
     if (addsConnector)
         hull() {
-            ColumnPart(index, left ? LBS : RBS, column1);
-            ColumnPart(index, left ? RBS : LBS, column2);
+            ColumnPart(index, column1, left ? LBS : RBS);
+            ColumnPart(index, column2, left ? RBS : LBS);
         }
 }
 
 module ColumnChessBridgePart(index, column1, column2, left = false, addsConnector = true) {
     hull() {
-        ColumnPart(index, left ? RS : LS, column1);
-        ColumnPart(index, left ? LBS : RBS, column2);
+        ColumnPart(index, column1, left ? RS : LS);
+        ColumnPart(index, column2, left ? LBS : RBS);
     }
 
     if (addsConnector) {
         hull() {
-            ColumnPart(index + 1, left ? RTS : LTS, column1);
-            ColumnPart(index + 1, left ? LS : RS, column2);
+            ColumnPart(index + 1, column1, left ? RTS : LTS);
+            ColumnPart(index + 1, column2, left ? LS : RS);
         }
     }
 }
 
-module ColumnPart(index, type, column) {
+module ColumnFirstPart(column, type, offset = [0, 0, 0, 0],
+    thickness = 1, height = CaseThickness, space = KeycapSpace)
+{
+    ColumnPart(firstIndexOf(column), column, type, offset, thickness, height, space);
+}
+
+module ColumnLastPart(column, type, offset = [0, 0, 0, 0],
+    thickness = 1, height = CaseThickness, space = KeycapSpace)
+{
+    ColumnPart(lastIndexOf(column), column, type, offset, thickness, height, space);
+}
+
+module ColumnPart(index, column, type, offset = [0, 0, 0, 0],
+    thickness = 1, height = CaseThickness, space = KeycapSpace)
+{
     hull() {
         if (type == LS) {
-            ColumnPartPillars(index, column, [LT, LB]);
+            ColumnPartPillars(index, column, [LT, LB],
+                offset, thickness, height, space);
         } else if (type == LTS) {
-            ColumnPartPillars(index, column, LT);
-            ColumnPartPillars(index - 1, column, LB);
+            ColumnPartPillars(index, column, LT,
+                offset, thickness, height, space);
+            ColumnPartPillars(index - 1, column, LB,
+                offset, thickness, height, space);
         } else if (type == LBS) {
-            ColumnPartPillars(index, column, LB);
-            ColumnPartPillars(index + 1, column, LT);
+            ColumnPartPillars(index, column, LB,
+                offset, thickness, height, space);
+            ColumnPartPillars(index + 1, column, LT,
+                offset, thickness, height, space);
         } else if (type == RS) {
-            ColumnPartPillars(index, column, [RT, RB]);
+            ColumnPartPillars(index, column, [RT, RB],
+                offset, thickness, height, space);
         } else if (type == RTS) {
-            ColumnPartPillars(index, column, RT);
-            ColumnPartPillars(index - 1, column, RB);
+            ColumnPartPillars(index, column, RT,
+                offset, thickness, height, space);
+            ColumnPartPillars(index - 1, column, RB,
+                offset, thickness, height, space);
         } else if (type == RBS) {
-            ColumnPartPillars(index, column, RB);
-            ColumnPartPillars(index + 1, column, RT);
+            ColumnPartPillars(index, column, RB,
+                offset, thickness, height, space);
+            ColumnPartPillars(index + 1, column, RT,
+                offset, thickness, height, space);
         } else if (type == TS) {
-            ColumnPartPillars(index, column, [LT, RT]);
+            ColumnPartPillars(index, column, [LT, RT],
+                offset, thickness, height, space);
         } else if (type == BS) {
-            ColumnPartPillars(index, column, [LB, RB]);
+            ColumnPartPillars(index, column, [LB, RB],
+                offset, thickness, height, space);
         }
     }
 }
