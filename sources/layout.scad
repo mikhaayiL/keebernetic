@@ -75,11 +75,82 @@ Layout();
 module Layout() {
     MainCluster();
 
-    // translate([72, -55, -1]) {
-    //     rotate([25, -7, 30]) {
-    //         ThumbCluster();
+    ThumbClusterOffset()
+        ThumbCluster();
+
+
+
+    ConvexHull() {
+        ColumnLastBorder(IndexC3, RB, caseThickness = -2);
+        ColumnLastBorderIntersection(IndexC3, [LB, RB], IndexC4, [RT, RB], 10);
+        ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7]);
+        ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12]);
+    }
+
+    ConvexHull() {
+        ColumnLastBorderIntersection(IndexC3, [LB, RB], IndexC4, [RT, RB], 10);
+        ColumnLastBorder(MiddleC4, RB, [-19, 19, 0, 4.22]);
+        ColumnLastBorder(MiddleC4, RB, [-19, 19, 0, 5]);
+        ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12]);
+        ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7], .1);
+    }
+
+    ConvexHull() {
+        ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12], .001);
+        ColumnLastBorder(IndexC3, RB, caseThickness = -4);
+        ThumbClusterOffset() {
+             ColumnFirstBorder(ThumbC3, LT, [.999, 0, .999, 0], .001);
+             ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0], .1);
+             ColumnFirstPillars(ThumbC3, LT, [7, 0, 2, 0], .1);
+        }
+    }
+
+
+
+
+
+    ConvexHull() {
+        ColumnLastBorder(IndexC3, RB, caseThickness = -4);
+        ColumnLastBorder(IndexC2, RB, caseThickness = -6);
+        ThumbClusterOffset()
+            ColumnFirstBorder(ThumbC3, [LT, RT]);
+    }
+
+    ConvexHull() {
+        ColumnLastBorderIntersection(IndexC2, [LB, RB], IndexC3, [RT, RB], 10);
+        ColumnLastBorder(IndexC3, RB, caseThickness = -4);
+        ColumnLastBorder(IndexC2, RB, caseThickness = -2);
+    }
+
+    ConvexHull() {
+        ColumnLastBorder(IndexC2, RB, caseThickness = -6);
+        ColumnLastPillars(IndexC2, RB, [0, 5, 0, -3]);
+        ThumbClusterOffset()
+            ColumnFirstBorder(ThumbC3, RT);
+    }
+
+    ConvexHull() {
+        ColumnLastBorder(IndexC2, RB, caseThickness = -6);
+        ColumnLastPillars(IndexC2, RB, [0, 0, 0, 0]);
+        ColumnLastPillars(IndexC2, RB, [0, 5, 0, -3]);
+        ThumbClusterOffset() {
+            ColumnFirstBorder(ThumbC3, [RT, RB], [0, 0, 0, -3]);
+            ColumnFirstPillars(ThumbC3, RB, [0, 5, 0, -1], 3);
+        }
+    }
+
+    // ConvexHull(false) {
+    //     ColumnLastPillars(IndexC2, RB, [0, 5, 0, -3]);
+    //     ThumbClusterOffset() {
+    //         ColumnFirstPillars(ThumbC3, RB, [0, 5, 0, -1]);
     //     }
     // }
+}
+
+module ThumbClusterOffset() {
+    translate([72, -55, 0])
+        rotate([25, -7, 30])
+            children();
 }
 
 module MainCluster() {
@@ -109,7 +180,7 @@ module ThumbCluster() {
     ColumnBridge(ThumbC2, ThumbC3, true, true);
 
     ThumbC2Border();
-    ThumbC3BorderLS();
+    ThumbC3Border();
 }
 
 module ConvexHull(hulling = ConvexHull, color = CaseColor) {
@@ -449,7 +520,7 @@ module LittleC2BorderBS() {
 module IndexC2Border() {
     IndexC2BorderRS();
     IndexC2BorderTS();
-    IndexC2BorderBS();
+    // IndexC2BorderBS();
 }
 
 module IndexC2BorderRS() {
@@ -662,44 +733,44 @@ module MainClusterBS() {
 
 
 
-    ConvexHull() {
-        ColumnLastBorder(IndexC3, RB);
-        ColumnLastBorderIntersection(IndexC3, [LB, RB], IndexC4, [RT, RB], 10);
-        ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7]);
-        ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12]);
-    }
+    // ConvexHull() {
+    //     ColumnLastBorder(IndexC3, RB);
+    //     ColumnLastBorderIntersection(IndexC3, [LB, RB], IndexC4, [RT, RB], 10);
+    //     ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7]);
+    //     ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12]);
+    // }
 
-    ConvexHull() {
-        ColumnLastBorderIntersection(IndexC3, [LB, RB], IndexC4, [RT, RB], 10);
-        ColumnLastBorder(MiddleC4, RB, [-19, 19, 0, 4.22]);
-        ColumnLastBorder(MiddleC4, RB, [-19, 19, 0, 5]);
-        ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12]);
-        ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7], .1);
-    }
+    // ConvexHull() {
+    //     ColumnLastBorderIntersection(IndexC3, [LB, RB], IndexC4, [RT, RB], 10);
+    //     ColumnLastBorder(MiddleC4, RB, [-19, 19, 0, 4.22]);
+    //     ColumnLastBorder(MiddleC4, RB, [-19, 19, 0, 5]);
+    //     ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12]);
+    //     ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7], .1);
+    // }
 
-    ConvexHull() {
-        ColumnLastBorder(IndexC3, RB);
-        ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7]);
-        ColumnLastPillars(IndexC3, RB, [0, 7, 0, 2]);
-    }
+    // ConvexHull() {
+    //     ColumnLastBorder(IndexC3, RB);
+    //     ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7]);
+    //     ColumnLastPillars(IndexC3, RB, [0, 7, 0, 2]);
+    // }
 
-    ConvexHull() {
-        ColumnLastPillars(IndexC3, [LB, RB], [0, 3, 0, 0]);
-        ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7]);
-        ColumnLastPillars(IndexC3, LB, [0, 0, 0, 2]);
-    }
+    // ConvexHull() {
+    //     ColumnLastPillars(IndexC3, [LB, RB], [0, 3, 0, 0]);
+    //     ColumnLastPillars(IndexC3, RB, [0, 0, 0, 7]);
+    //     ColumnLastPillars(IndexC3, LB, [0, 0, 0, 2]);
+    // }
 
-    ConvexHull() {
-        ColumnLastPillars(IndexC4, [RT, RB], [0, 0, 0, 0]);
-        ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12]);
-        ColumnLastPillars(IndexC3, LB, [0, 0, 0, 2]);
-    }
+    // ConvexHull() {
+    //     ColumnLastPillars(IndexC4, [RT, RB], [0, 0, 0, 0]);
+    //     ColumnLastPillars(MiddleC4, RB, [0, 20, 0, 12]);
+    //     ColumnLastPillars(IndexC3, LB, [0, 0, 0, 2]);
+    // }
 
-    ConvexHull() {
-        ColumnLastPillars(IndexC3, LB, [1, 0, 0, 2]);
-        ColumnLastPillars(IndexC3, LB, [0, 0, 0, 0]);
-        ColumnPart(lastIndexOf(IndexC4) - 1, IndexC4, RBS);
-    }
+    // ConvexHull() {
+    //     ColumnLastPillars(IndexC3, LB, [1, 0, 0, 2]);
+    //     ColumnLastPillars(IndexC3, LB, [0, 0, 0, 0]);
+    //     ColumnPart(lastIndexOf(IndexC4) - 1, IndexC4, RBS);
+    // }
 }
 
 
@@ -716,39 +787,35 @@ module ThumbC2BorderLS() {
     ConvexHull() {
         ColumnLastBorder(ThumbC2, LT, [0, 0, -2, 0]);
         ColumnFirstBorder(ThumbC2, LB, [0, 0, 0, -2]);
-        ColumnFirstPillars(ThumbC2, LB, [5, 0, 0, 0], 1);
-        ColumnLastPillars(ThumbC2, LT, [5, 0, 0, 0], 1);
+        ColumnFirstPillars(ThumbC2, LB, [5, 0, 0, 0]);
+        ColumnLastPillars(ThumbC2, LT, [5, 0, 0, 0]);
     }
 
     ConvexHull() {
         ColumnFirstBorder(ThumbC2, [LT, LB], [0, 0, 0, -2]);
         ColumnFirstPillars(ThumbC2, LT, [5, 0, -3, 0]);
-        ColumnFirstPillars(ThumbC2, LB, [5, 0, 0, 0], 1);
+        ColumnFirstPillars(ThumbC2, LB, [5, 0, 0, 0]);
     }
 
     ConvexHull() {
         ColumnLastBorder(ThumbC2, [LT, LB], [0, 0, -2, 0]);
         ColumnLastPillars(ThumbC2, LB, [5, 0, 0, -3]);
-        ColumnLastPillars(ThumbC2, LT, [5, 0, 0, 0], 1);
+        ColumnLastPillars(ThumbC2, LT, [5, 0, 0, 0]);
     }
 
     ConvexHull() {
-        ColumnPart(ThumbC2[startIndex], LBS, ThumbC2);
-
-        hull() {
-            ColumnFirstPillars(ThumbC2, LB, [5, 0, 0, 0], .1);
-            ColumnLastPillars(ThumbC2, LT, [5, 0, 0, 0], .1);
-        }
+        ColumnFirstPart(ThumbC2, LBS);
+        ColumnFirstPart(ThumbC2, LBS, [5, 0, 0, 0]);
     }
 
     ConvexHull() {
-        ColumnPart(ThumbC2[startIndex], LS, ThumbC2);
-        ColumnFirstPillars(ThumbC2, [LT, LB], [5, 0, -3, 0], 1);
+        ColumnFirstPart(ThumbC2, LS);
+        ColumnFirstPart(ThumbC2, LS, [5, 0, -3, 0]);
     }
 
     ConvexHull() {
-        ColumnPart(lastIndexOf(ThumbC2), LS, ThumbC2);
-        ColumnLastPillars(ThumbC2, [LT, LB], [5, 0, 0, -3], 1);
+        ColumnLastPart(ThumbC2, LS);
+        ColumnLastPart(ThumbC2, LS, [5, 0, 0, -3]);
     }
 }
 
@@ -756,45 +823,44 @@ module ThumbC2BorderTS() {
     ConvexHull() {
         ColumnFirstBorderIntersection(ThumbC2, [LT, RT], ThumbC3, [LT, LB], 10);
         ColumnFirstBorder(ThumbC3, LT);
-        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0], 1);
-        ColumnFirstPillars(ThumbC3, LT, [7, 0, 2, 0], 1);
+        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0], .1);
+        ColumnFirstPillars(ThumbC3, LT, [7, 0, 2, 0]);
     }
 
     ConvexHull() {
         ColumnFirstBorderIntersection(ThumbC2, [LT, RT], ThumbC3, [LT, LB], 10);
         ColumnFirstBorder(ThumbC2, LT);
-        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0], 1);
-        ColumnFirstPillars(ThumbC3, LT, [7, 0, 0, 0], 1, 1);
+        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0]);
+        ColumnFirstPillars(ThumbC3, LT, [7, 0, 0, 0], height = 1);
     }
 
     ConvexHull() {
         ColumnFirstBorder(ThumbC2, LT);
-        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0], 1);
-        ColumnFirstPillars(ThumbC2, LT, [5, 0, -3, 0], 1);
+        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0]);
+        ColumnFirstPillars(ThumbC2, LT, [5, 0, -3, 0]);
     }
 
     ConvexHull() {
-        ColumnFirstPillars(ThumbC2, LT, [0, 0, 0, 0], 1);
-        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0], 1);
-        ColumnFirstPillars(ThumbC2, LT, [5, 0, -3, 0], 1);
+        ColumnFirstPillars(ThumbC2, LT, [0, 0, 0, 0]);
+        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0]);
+        ColumnFirstPillars(ThumbC2, LT, [5, 0, -3, 0]);
     }
 
     ConvexHull() {
-        ColumnPart(ThumbC2[startIndex], TS, ThumbC2);
-        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0], 1);
+        ColumnFirstPart(ThumbC2, TS);
+        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0]);
     }
 
     ConvexHull() {
-        ColumnFirstPillars(ThumbC2, RT, [0, 0, 0, 0], 1);
-        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0], 1);
-        ColumnFirstPillars(ThumbC3, LT, [7, 0, 2, 0], 1);
+        ColumnFirstPillars(ThumbC2, RT, [0, 0, 0, 0]);
+        ColumnFirstPillars(ThumbC2, LT, [0, 0, 7, 0]);
+        ColumnFirstPillars(ThumbC3, LT, [7, 0, 2, 0]);
     }
 
     ConvexHull() {
-        ColumnFirstPillars(ThumbC2, RT, [0, 0, 0, 0], 1);
-
-        ColumnPart(ThumbC3[startIndex], LS, ThumbC3);
-        ColumnFirstPillars(ThumbC3, LT, [7, 0, 2, 0], 1);
+        ColumnFirstPart(ThumbC3, LS);
+        ColumnFirstPillars(ThumbC2, RT, [0, 0, 0, 0]);
+        ColumnFirstPillars(ThumbC3, LT, [7, 0, 2, 0]);
     }
 }
 
@@ -802,82 +868,160 @@ module ThumbC2BorderBS() {
     ConvexHull() {
         ColumnLastBorderIntersection(ThumbC2, [LB, RB], ThumbC3, [LT, LB], 10);
         ColumnLastBorder(ThumbC3, LB);
-        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7], 1);
-        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 2], 1);
+        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7], .1);
+        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 2]);
     }
 
     ConvexHull() {
         ColumnLastBorderIntersection(ThumbC2, [LB, RB], ThumbC3, [LT, LB], 10);
         ColumnLastBorder(ThumbC2, LB);
-        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7], 1);
-        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 0], 1, 1);
+        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7]);
+        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 0], height = 1);
     }
 
     ConvexHull() {
         ColumnLastBorder(ThumbC2, LB);
-        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7], 1);
-        ColumnLastPillars(ThumbC2, LB, [5, 0, 0, -3], 1);
+        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7]);
+        ColumnLastPillars(ThumbC2, LB, [5, 0, 0, -3]);
     }
 
     ConvexHull() {
-        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 0], 1);
-        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7], 1);
-        ColumnLastPillars(ThumbC2, LB, [5, 0, 0, -3], 1);
+        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 0]);
+        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7]);
+        ColumnLastPillars(ThumbC2, LB, [5, 0, 0, -3]);
     }
 
     ConvexHull() {
-        ColumnPart(lastIndexOf(ThumbC2), BS, ThumbC2);
-        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7], 1);
+        ColumnLastPart(ThumbC2, BS);
+        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7]);
     }
 
     ConvexHull() {
-        ColumnLastPillars(ThumbC2, RB, [0, 0, 0, 0], 1);
-        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7], 1);
-        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 2], 1);
+        ColumnLastPillars(ThumbC2, RB, [0, 0, 0, 0]);
+        ColumnLastPillars(ThumbC2, LB, [0, 0, 0, 7]);
+        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 2]);
     }
 
     ConvexHull() {
-        ColumnLastPillars(ThumbC2, RB, [0, 0, 0, 0], 1);
-
-        ColumnPart(lastIndexOf(ThumbC3), LS, ThumbC3);
-        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 2], 1);
+        ColumnLastPart(ThumbC3, LS);
+        ColumnLastPillars(ThumbC2, RB, [0, 0, 0, 0]);
+        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 2]);
     }
 }
 
-module ThumbC3BorderLS() {
+module ThumbC3Border() {
+    ThumbC3BorderRS();
+    ThumbC3BorderBS();
+    ThumbC3BorderTS();
+}
+
+module ThumbC3BorderRS() {
     ConvexHull() {
-        ColumnFirstBorder(ThumbC3, [RT, RB], [0, 0, 0, -1]);
-        ColumnFirstPillars(ThumbC3, [RT, RB], [0, 5, -2, 1], 1);
+        ColumnFirstBorder(ThumbC3, [RT, RB], [0, 0, 0, -2]);
+        ColumnFirstPillars(ThumbC3, RT, [0, 5, 0, 0]);
+        ColumnFirstPillars(ThumbC3, RB, [0, 5, 0, 0]);
     }
 
     ConvexHull() {
         ColumnPartOffset(lastIndexOf(ThumbC3) - 1, ThumbC3) {
-            SwitchBorderPillars(RT, [0, 0, -1, 0]);
-            SwitchPlacePillars(RT, ThumbC3[placeSizes] + [0, 5, 1, 0], 1);
+            SwitchBorderPillars(RT, [0, 0, -2, 0]);
+            SwitchPlacePillars(RT, ThumbC3[placeSizes] + [0, 5, 0, 0], 1);
         }
-        ColumnFirstBorder(ThumbC3, RB, [0, 0, 0, -1]);
-        ColumnFirstPillars(ThumbC3, RB, [0, 5, 0, 1], 1);
+        ColumnFirstBorder(ThumbC3, RB, [0, 0, 0, -2]);
+        ColumnFirstPillars(ThumbC3, RB, [0, 5, 0, 0]);
     }
 
     ConvexHull() {
         ColumnPartOffset(lastIndexOf(ThumbC3) - 1, ThumbC3) {
-            SwitchBorderPillars([RT, RB], [0, 0, -1, -1]);
-            SwitchPlacePillars([RT, RB], ThumbC3[placeSizes] + [0, 5, 1, 1], 1);
+            SwitchBorderPillars(RB, [0, 0, 0, -2]);
+            SwitchPlacePillars(RB, ThumbC3[placeSizes] + [0, 5, 0, 0], 1);
         }
-    }
-
-    ConvexHull() {
-        ColumnLastBorder(ThumbC3, [RT, RB], [0, 0, -1, 0]);
-        ColumnLastPillars(ThumbC3, [RT, RB], [0, 5, 1, -2], 1);
+        ColumnPartOffset(lastIndexOf(ThumbC3) - 1, ThumbC3) {
+            SwitchBorderPillars(RT, [0, 0, -2, 0]);
+            SwitchPlacePillars(RT, ThumbC3[placeSizes] + [0, 5, 0, 0], 1);
+        }
     }
 
     ConvexHull() {
         ColumnPartOffset(lastIndexOf(ThumbC3) - 1, ThumbC3) {
-            SwitchBorderPillars(RB, [0, 0, 0, -1]);
-            SwitchPlacePillars(RB, ThumbC3[placeSizes] + [0, 5, 0, 1], 1);
+            SwitchBorderPillars(RB, [0, 0, 0, -2]);
+            SwitchPlacePillars(RB, ThumbC3[placeSizes] + [0, 5, 0, 0], 1);
         }
-        ColumnLastBorder(ThumbC3, RT, [0, 0, -1, 0]);
-        ColumnLastPillars(ThumbC3, RT, [0, 5, 1, 0], 1);
+        ColumnLastBorder(ThumbC3, RT, [0, 0, -2, 0]);
+        ColumnLastPillars(ThumbC3, RT, [0, 5, 0, 0]);
     }
 
+    ConvexHull() {
+        ColumnLastBorder(ThumbC3, [RT, RB], [0, 0, -2, 0]);
+        ColumnLastPillars(ThumbC3, RB, [0, 5, 0, 0]);
+        ColumnLastPillars(ThumbC3, RT, [0, 5, 0, 0]);
+    }
+
+    ConvexHull() {
+        ColumnFirstPart(ThumbC3, RS);
+        ColumnFirstPart(ThumbC3, RS, [0, 5, 0, 0]);
+    }
+
+    ConvexHull() {
+        ColumnFirstPart(ThumbC3, RBS);
+        ColumnFirstPart(ThumbC3, RBS, [0, 5, 0, 0]);
+    }
+
+    ConvexHull() {
+        ColumnPart(lastIndexOf(ThumbC3) - 1, ThumbC3, RS);
+        ColumnPart(lastIndexOf(ThumbC3) - 1, ThumbC3, RS, [0, 5, 0, 0]);
+    }
+
+    ConvexHull() {
+        ColumnLastPart(ThumbC3, RTS);
+        ColumnLastPart(ThumbC3, RTS, [0, 5, 0, 0]);
+    }
+
+    ConvexHull() {
+        ColumnLastPart(ThumbC3, RS);
+        ColumnLastPart(ThumbC3, RS, [0, 5, 0, 0]);
+    }
+
+
+    ConvexHull() {
+        ColumnLastBorder(ThumbC3, RB);
+        ColumnLastPillars(ThumbC3, RB, [0, 5, 0, 0]);
+        ColumnLastPillars(ThumbC3, RB, [0, 0, 0, 5]);
+        ColumnLastPillars(ThumbC3, RB, [0, 3.5, 0, 3.5]);
+    }
+
+    ConvexHull() {
+        ColumnLastPillars(ThumbC3, RB, [0, 5, 0, -3]);
+        ColumnLastPillars(ThumbC3, RB, [0, 0, 0, 5]);
+        ColumnLastPillars(ThumbC3, RB);
+    }
+}
+
+module ThumbC3BorderTS() {
+    ConvexHull() {
+        ColumnFirstBorder(ThumbC3, [LT, RT]);
+    }
+
+    ConvexHull() {
+        ColumnFirstPillars(ThumbC3, [LT, RT], [3, 2, 0, 0]);
+        ColumnFirstPillars(ThumbC3, [LT, RT], [3, 2, 2, 0]);
+    }
+}
+
+module ThumbC3BorderBS() {
+    ConvexHull() {
+        ColumnLastBorder(ThumbC3, LB);
+        ColumnLastPillars(ThumbC3, LB, [0, 0, 0, 5]);
+        ColumnLastPillars(ThumbC3, LB, [7, 0, 0, 2]);
+    }
+
+    ConvexHull() {
+        ColumnLastBorder(ThumbC3, [LB, RB]);
+        ColumnLastPillars(ThumbC3, [LB, RB], [0, 0, 0, 5]);
+    }
+
+    ConvexHull() {
+        ColumnLastPillars(ThumbC3, [LB, RB], [0, 0, 0, 5]);
+        ColumnLastPart(ThumbC3, BS, [5, 0, 0, 0]);
+    }
 }
