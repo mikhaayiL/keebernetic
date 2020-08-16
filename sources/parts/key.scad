@@ -33,6 +33,17 @@ RT = 1; // top right corner
 LB = 2; // bottom left corner
 RB = 3; // bottom right corner
 
+module OverKeyInner(corners, offsets, height = .001, space = KeycapSpace) {
+    ConvexHull(PillarsColor)
+    SwitchPlacePillars(corners, offsets, height, space);
+}
+
+module UnderKeyInner(corners, offsets, height = 5, space = KeycapSpace) {
+    ConvexHull(PillarsColor)
+    translate([0, 0, -SwitchPlaceThickness - height])
+        SwitchPlacePillars(corners, offsets, height, space);
+}
+
 // corners: corner or array of the corners
 // offsets: [left, right, top, bottom]
 module SwitchPlacePillars(corners, offsets, height = .001, space = KeycapSpace) {
@@ -52,6 +63,16 @@ module SwitchPlacePillars(corners, offsets, height = .001, space = KeycapSpace) 
 module Pillar(thickness, height, offset) {
     translate(offset)
     cube([thickness, thickness, height], true);
+}
+
+module ConvexHull(color, offset) {
+    color(color)
+    hull() {
+        children();
+        if (!is_undef(offset))
+            translate(offset)
+                children();
+    }
 }
 
 module SwitchHoleInner() {
