@@ -48,7 +48,7 @@ IndexC4       = columnParams(
 
 IndexC3       = columnParams(
     keys      = 3,
-    offset    = [38, -5, 6],
+    offset    = [38, -5, 5],
     key       = keyParams(
         [-1, -0.5, -0.5, -0.5],
         [-2.5, -0.5, 1, 1],
@@ -56,7 +56,7 @@ IndexC3       = columnParams(
 
 IndexC2       = columnParams(
     keys      = 2,
-    offset    = [59.4, -15.73, 11],
+    offset    = [59.4, -15.73, 10],
     degrees   = [ConcavityAngle / -2, -20, 0],
     key       = keyParams(
         [-0.5, -0.5, -0.5, -0.5],
