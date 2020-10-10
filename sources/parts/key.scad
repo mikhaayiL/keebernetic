@@ -22,6 +22,7 @@ CaseColor               = "#080";
 AmoebaPcbColor          = "#fff";
 PcbComponentsSpaceColor = "#f0c";
 PillarsColor            = "#f00";
+OutlinesColor           = "#ff0";
 
 L = 0; // left
 R = 1; // right
@@ -33,21 +34,33 @@ RT = 1; // top right corner
 LB = 2; // bottom left corner
 RB = 3; // bottom right corner
 
-module OverKeyInner(corners, offsets, height = .001, space = KeycapSpace) {
+MinimalValue = .001;
+
+module KeyTopInner(corners, offsets, height = MinimalValue, space = KeycapSpace) {
     ConvexHull(PillarsColor)
     SwitchPlacePillars(corners, offsets, height, space);
 }
 
-module UnderKeyInner(corners, offsets, height = 5, space = KeycapSpace) {
+module KeyBottomInner(corners, offsets, height = 10, space = KeycapSpace) {
     ConvexHull(PillarsColor)
     translate([0, 0, -SwitchPlaceThickness - height])
         SwitchPlacePillars(corners, offsets, height, space);
 }
 
+module ConvexHull(color, offset) {
+    color(color)
+    hull() {
+        children();
+        if (!is_undef(offset))
+            translate(offset)
+                children();
+    }
+}
+
 // corners: corner or array of the corners
 // offsets: [left, right, top, bottom]
-module SwitchPlacePillars(corners, offsets, height = .001, space = KeycapSpace) {
-    thickness = .001;
+module SwitchPlacePillars(corners, offsets, height = MinimalValue, space = KeycapSpace) {
+    thickness = MinimalValue;
     halfOfSpace = (space - thickness) / 2;
     halfOfHeight = height / 2;
 
@@ -63,16 +76,6 @@ module SwitchPlacePillars(corners, offsets, height = .001, space = KeycapSpace) 
 module Pillar(thickness, height, offset) {
     translate(offset)
     cube([thickness, thickness, height], true);
-}
-
-module ConvexHull(color, offset) {
-    color(color)
-    hull() {
-        children();
-        if (!is_undef(offset))
-            translate(offset)
-                children();
-    }
 }
 
 module SwitchHoleInner() {
@@ -109,7 +112,7 @@ module Keycap() {
 }
 
 module Switch() {
-    mSwitchBottomHeight = SwitchBottomHeight + .01;
+    mSwitchBottomHeight = SwitchBottomHeight + MinimalValue;
     mSwitchTopHeight = mSwitchBottomHeight + KeycapUpperHeight;
 
     top = [
@@ -163,11 +166,18 @@ function getCornerOffsets(offsets, height = 0) = [
 ];
 
 function parseOffsets(offsets, halfOfSpace = 0) = [
-   -halfOfSpace - parseValue(offsets[L]),
-    halfOfSpace + parseValue(offsets[R]),
-    halfOfSpace + parseValue(offsets[T]),
-   -halfOfSpace - parseValue(offsets[B]),
+   -halfOfSpace - parseValue(offsets[L], additional = MinimalValue),
+    halfOfSpace + parseValue(offsets[R], additional = MinimalValue),
+    halfOfSpace + parseValue(offsets[T], additional = MinimalValue),
+   -halfOfSpace - parseValue(offsets[B], additional = MinimalValue),
 ];
 
-function parseValue(value, default = 0) =
-    is_undef(value) ? default : value;
+function parseOffsetsDefault(offsets, default = 0) = [
+    parseValue(offsets[L], default),
+    parseValue(offsets[R], default),
+    parseValue(offsets[T], default),
+    parseValue(offsets[B], default),
+];
+
+function parseValue(value, default = 0, additional = 0) =
+    (is_undef(value) ? default : value) + additional;

@@ -8,7 +8,6 @@
 include <key.scad>
 
 ConcavityAngle = 25.713; // default concavity angle
-DoubleConvexHullValue = 0;
 
 // column params
 function columnParams(
@@ -83,31 +82,71 @@ module Column(column) {
             children();
 }
 
+module ColumnFirst(column) {
+    first = firstIndexOf(column);
+    ColumnPartOffset(first, column)
+        children();
+}
+
+module ColumnLast(column) {
+    last = lastIndexOf(column);
+    ColumnPartOffset(last, column)
+        children();
+}
+
 module ColumnVisualKeys(column, pressed = false) {
     Column(column)
         VisualKey(column[key][rotation], pressed);
 }
 
-module ColumnParts(column) {
+module ColumnSwitchHoles(column) {
+    Column(column)
+        SwitchHoleInner();
+}
+
+module ColumnFirstParts(column, corners, offsets, height) {
+    ColumnFirst(column)
+        KeyTopInner(corners, column[key][top] + parseOffsetsDefault(offsets),
+            height ? height : MinimalValue);
+}
+
+module ColumnLastParts(column, corners, offsets, height) {
+    ColumnLast(column)
+        KeyTopInner(corners, column[key][top] + parseOffsetsDefault(offsets),
+            height ? height : MinimalValue);
+}
+
+module ConvexHullColumnFirst(argsArray, offset, color = OutlinesColor) {
+    ConvexHull(color, offset)
+        for (args = argsArray)
+            ColumnFirstParts(args[0], args[1], args[2], args[3]);
+}
+
+module ConvexHullColumnLast(argsArray, offset, color = OutlinesColor) {
+    ConvexHull(color, offset)
+        for (args = argsArray)
+            ColumnLastParts(args[0], args[1], args[2], args[3]);
+}
+
+module ColumnParts(column, top, offset) {
     last = lastIndexOf(column);
     first = firstIndexOf(column);
 
+    color(CaseColor)
     for (index = [first : last]) {
-        ColumnPartOffset(index, column)
-            SwitchHoleInner();
-
-        for (over = [0 : 1]) {
-            ConvexHull(CaseColor, upwardOffset(over))
-                ColumnPartInner(index, column, [LS, RS], over);
-
-            if (index > first)
-                ConvexHull(CaseColor, upwardOffset(over))
-                    ColumnPartInner(index, column, [LTS, RTS], over);
-        }
+        ColumnPartInner(index, column, [LS, RS], top, offset);
+        if (index > first)
+            ColumnPartInner(index, column, [LTS, RTS], top, offset);
     }
 }
 
-module ColumnBridge(column1, column2, left = false, chess = false) {
+module ColumnPart(index, column, notFirst, top, offset) {
+    ColumnPartInner(index, column, [LS, RS], top, offset);
+    if (notFirst)
+        ColumnPartInner(index, column, [LTS, RTS], top, offset);
+}
+
+module ColumnBridge(column1, column2, top, left = false, chess = false, offset) {
     last = column1[keys] > column2[keys]
         ? lastIndexOf(column2)
         : lastIndexOf(column1);
@@ -116,102 +155,94 @@ module ColumnBridge(column1, column2, left = false, chess = false) {
         ? firstIndexOf(column2)
         : firstIndexOf(column1);
 
-    for (over = [0 : 1]) {
-        for (index = [first : last])
-            if (chess) ColumnChessBridgePart(
-                index, column1, column2, over, left, last > index);
-            else ColumnBridgePart(
-                index, column1, column2, over, left, last > index);
+    for (index = [first : last])
+        if (chess) ColumnChessBridgePart(
+            index, column1, column2, top, left, last > index, offset);
+        else ColumnBridgePart(
+            index, column1, column2, top, left, last > index, offset);
 
-        if (chess) {
-            ColumnChessBridgePart2to3(first, column1, column2, over, left, true);
-            ColumnChessBridgePart2to3(last, column1, column2, over, left, false);
-        } else if (column1[keys] == 3 && column2[keys] == 4)
-            ColumnBridgePart3to4(column1, column2, over, false);
-        else if (column1[keys] == 4 && column2[keys] == 3)
-            ColumnBridgePart3to4(column2, column1, over, true);
-    }
+    if (chess) {
+        ColumnChessBridgePart2to3(first, column1, column2, top, left, true, offset);
+        ColumnChessBridgePart2to3(last, column1, column2, top, left, false, offset);
+    } else if (column1[keys] == 3 && column2[keys] == 4)
+        ColumnBridgePart3to4(column1, column2, top, false, offset);
+    else if (column1[keys] == 4 && column2[keys] == 3)
+        ColumnBridgePart3to4(column2, column1, top, true, offset);
 }
 
-module ColumnBridgePart(index, column1, column2, over, left, connector) {
-    ConvexHull(PillarsColor, upwardOffset(over)) {
-        ColumnPartInner(index, column1, left ? LS : RS, over);
-        ColumnPartInner(index, column2, left ? RS : LS, over);
+module ColumnBridgePart(index, column1, column2, top, left, connector, offset) {
+    ConvexHull(PillarsColor) {
+        ColumnPartInner(index, column1, left ? LS : RS, top, offset);
+        ColumnPartInner(index, column2, left ? RS : LS, top, offset);
     }
 
     if (connector)
-        ConvexHull(PillarsColor, upwardOffset(over)) {
-            ColumnPartInner(index, column1, left ? LBS : RBS, over);
-            ColumnPartInner(index, column2, left ? RBS : LBS, over);
+        ConvexHull(PillarsColor) {
+            ColumnPartInner(index, column1, left ? LBS : RBS, top, offset);
+            ColumnPartInner(index, column2, left ? RBS : LBS, top, offset);
         }
 }
 
-module ColumnChessBridgePart(index, column1, column2, over, left, connector) {
-    ConvexHull(PillarsColor, upwardOffset(over)) {
-        ColumnPartInner(index, column1, left ? RS : LS, over);
-        ColumnPartInner(index, column2, left ? LBS : RBS, over);
+module ColumnChessBridgePart(index, column1, column2, top, left, connector, offset) {
+    ConvexHull(PillarsColor) {
+        ColumnPartInner(index, column1, left ? RS : LS, top, offset);
+        ColumnPartInner(index, column2, left ? LBS : RBS, top, offset);
     }
 
     if (connector)
-        ConvexHull(PillarsColor, upwardOffset(over)) {
-            ColumnPartInner(index + 1, column1, left ? RTS : LTS, over);
-            ColumnPartInner(index + 1, column2, left ? LS : RS, over);
+        ConvexHull(PillarsColor) {
+            ColumnPartInner(index + 1, column1, left ? RTS : LTS, top, offset);
+            ColumnPartInner(index + 1, column2, left ? LS : RS, top, offset);
         }
 }
 
-module ColumnChessBridgePart2to3(index, column1, column2, over, left, first) {
-    ConvexHull(PillarsColor, upwardOffset(over)) {
-        ColumnPartInner(index + (first ? 0 : 1), column2, left ? LS : RS, over);
-        if (first) ColumnPart(index, column1, left ? RT : LT, over);
-        else ColumnPart(index, column1, left ? RB : LB, over);
+module ColumnChessBridgePart2to3(index, column1, column2, top, left, first, offset) {
+    ConvexHull(PillarsColor, offset) {
+        ColumnPartInner(index + (first ? 0 : 1), column2, left ? LS : RS, top);
+        if (first) ColumnKey(index, column1, left ? RT : LT, top);
+        else ColumnKey(index, column1, left ? RB : LB, top);
     }
 }
 
-module ColumnBridgePart3to4(column1, column2, over, left) {
-    ConvexHull(PillarsColor, upwardOffset(over)) {
-        ColumnPart(lastIndexOf(column1), column1, left ? LB : RB, over);
-        ColumnPartInner(lastIndexOf(column2), column2, left ? RTS : LTS, over);
-        ColumnPartInner(lastIndexOf(column2), column2, left ? RS : LS, over);
+module ColumnBridgePart3to4(column1, column2, top, left, offset) {
+    ConvexHull(PillarsColor, offset) {
+        ColumnKey(lastIndexOf(column1), column1, left ? LB : RB, top);
+        ColumnPartInner(lastIndexOf(column2), column2, left ? RTS : LTS, top);
+        ColumnPartInner(lastIndexOf(column2), column2, left ? RS : LS, top);
     }
 }
 
-module ColumnPartInner(index, column, types, over) {
-    ConvexHull(PillarsColor)
+module ColumnPartInner(index, column, types, top, offset) {
+    ConvexHull(PillarsColor, offset)
     for (type = types)
         if (type == LS) {
-            ColumnPart(index, column, [LT, LB], over);
+            ColumnKey(index, column, [LT, LB], top);
         } else if (type == LTS) {
-            ColumnPart(index, column, LT, over);
-            ColumnPart(index - 1, column, LB, over);
+            ColumnKey(index, column, LT, top);
+            ColumnKey(index - 1, column, LB, top);
         } else if (type == LBS) {
-            ColumnPart(index, column, LB, over);
-            ColumnPart(index + 1, column, LT, over);
+            ColumnKey(index, column, LB, top);
+            ColumnKey(index + 1, column, LT, top);
         } else if (type == RS) {
-            ColumnPart(index, column, [RT, RB], over);
+            ColumnKey(index, column, [RT, RB], top);
         } else if (type == RTS) {
-            ColumnPart(index, column, RT, over);
-            ColumnPart(index - 1, column, RB, over);
+            ColumnKey(index, column, RT, top);
+            ColumnKey(index - 1, column, RB, top);
         } else if (type == RBS) {
-            ColumnPart(index, column, RB, over);
-            ColumnPart(index + 1, column, RT, over);
+            ColumnKey(index, column, RB, top);
+            ColumnKey(index + 1, column, RT, top);
         } else if (type == TS) {
-            ColumnPart(index, column, [LT, RT], over);
+            ColumnKey(index, column, [LT, RT], top);
         } else if (type == BS) {
-            ColumnPart(index, column, [LB, RB], over);
+            ColumnKey(index, column, [LB, RB], top);
         }
 }
 
-module ColumnPart(index, column, corners, over = true) {
+module ColumnKey(index, column, corners, isTop = true) {
     ColumnPartOffset(index, column)
-        if (over) OverKeyInner(corners, column[key][top]);
-        else UnderKeyInner(corners, column[key][bottom]);
+        if (isTop) KeyTopInner(corners, column[key][top]);
+        else KeyBottomInner(corners, column[key][bottom]);
 }
-
-function getConvexHullValue(positive = true) =
-    positive ? DoubleConvexHullValue : -DoubleConvexHullValue;
-
-function upwardOffset(positive = true) =
-    [0, 0, getConvexHullValue(positive)];
 
 function firstIndexOf(column) =
     column[startIndex];
